@@ -9,22 +9,6 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup,CallbackQuery
 
 
-# def pole_keyboards():
-#     buttons =   [
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],
-# [InlineKeyboardButton(text=" ", callback_data=f"cell_{""}")],     
-#         ]
-#     return InlineKeyboardMarkup(inline_keyboard=buttons)
-
-
 field = [
     [" ", " ", " "],
     [" ", " ", " "],
