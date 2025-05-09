@@ -1,0 +1,10 @@
+Test
+.venv
+__pycache__
+.vscode
+telegram-casino-bot-3.3
+venv
+telebot.py
+testbot.py
+config.py
+.DS_Store
