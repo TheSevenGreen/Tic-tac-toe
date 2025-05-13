@@ -10,6 +10,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup,CallbackQue
 from config import TOKEN
 
 import keyboards as kb
+import lobby as lb
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
@@ -17,7 +18,6 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def start_handler(message: Message):
     await message.answer("Поле для крестиков-ноликов:", reply_markup=kb.pole_keyboards())
-
 
 @dp.callback_query()
 async def handle_callback(callback: CallbackQuery):
@@ -36,6 +36,20 @@ async def handle_callback(callback: CallbackQuery):
     if kb.check_win() == True:
         await callback.message.answer(f"Победил: {kb.val1}")
     
+
+@dp.message(Command("/join_lobby"))
+async def join_lobby(message: Message):
+    lb.lobbies["players"] = message.from_user.id
+    pass
+
+
+@dp.message(Command("/create_lobby"))
+async def create_lobby(message: Message):
+    lb.lobbies["host_id"] = message.from_user.id
+    lb.lobbies["players"] = message.from_user.id
+    await message.answer("Cоздаёться лобби")
+
+
 
 
 async def main():
