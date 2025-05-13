@@ -19,10 +19,23 @@ async def start_handler(message: Message):
     await message.answer("Поле для крестиков-ноликов:", reply_markup=kb.pole_keyboards())
 
 
-@dp.callback_query(F.data == f"cell_{0}_{0}")
+@dp.callback_query()
 async def handle_callback(callback: CallbackQuery):
-    await callback.message.answer(f"cell_{0}_{0}")
-    # await callback.answer("({kb.line},{kb.index})")
+    data = list(callback.data)
+    print(data," --", type(data))
+    kb.line = int(data[0])
+    kb.index = int(data[1])
+    kb.turn = data[2]
+    if kb.field[kb.line][kb.index] != " ":
+        await callback.message.answer("Клетка уже занята! Попробуй другую.", reply_markup=kb.pole_keyboards())
+    else:
+        kb.field[kb.line][kb.index] = kb.turn
+    kb.switch_turn()
+    await callback.message.answer(f"{kb.turn} поставлен в клетку {kb.line}-{kb.index}",reply_markup=kb.pole_keyboards())
+    kb.check_win()
+    if kb.check_win() == True:
+        await callback.message.answer(f"Победил: {kb.val1}")
+    
 
 
 async def main():
