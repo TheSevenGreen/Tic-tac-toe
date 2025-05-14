@@ -11,43 +11,56 @@ from config import TOKEN
 
 import keyboards as kb
 import lobby as lb
+import GameSession as gm
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def start_handler(message: Message):
-    await message.answer("Поле для крестиков-ноликов:", reply_markup=kb.pole_keyboards())
+    await message.answer("хуй", reply_markup=kb.keyboards)
+
+# reply_markup=kb.pole_keyboards()
+
+@dp.message(F.text == "🕹 Играть")
+async def play(message: Message):
+    await message.answer("Игра с самим собой:", reply_markup=kb.pole_keyboards())
 
 @dp.callback_query()
 async def handle_callback(callback: CallbackQuery):
     data = list(callback.data)
-    print(data," --", type(data))
-    kb.line = int(data[0])
-    kb.index = int(data[1])
+    kb.row = int(data[0])
+    kb.col = int(data[1])
     kb.turn = data[2]
-    if kb.field[kb.line][kb.index] != " ":
+    if kb.field[kb.row][kb.col] != " ":
         await callback.message.answer("Клетка уже занята! Попробуй другую.", reply_markup=kb.pole_keyboards())
     else:
-        kb.field[kb.line][kb.index] = kb.turn
-    kb.switch_turn()
-    await callback.message.answer(f"{kb.turn} поставлен в клетку {kb.line}-{kb.index}",reply_markup=kb.pole_keyboards())
-    kb.check_win()
-    if kb.check_win() == True:
-        await callback.message.answer(f"Победил: {kb.val1}")
+        kb.field[kb.row][kb.col] = kb.turn
+    gm.game.switch_turn()
+    await callback.message.answer(f"{kb.turn} поставлен в клетку {kb.row}-{kb.col}",reply_markup=kb.pole_keyboards())
+    gm.game.check_win()
+    if gm.game.check_win() == True:
+        await callback.message.answer(f"Победил: {gm.val1}")
     
 
-@dp.message(Command("/join_lobby"))
+@dp.message(F.text == "🤼‍♂ Присоединиться к лобби")
 async def join_lobby(message: Message):
-    lb.lobbies["players"] = message.from_user.id
-    pass
+    user_id = message.from_user.id
+    abc = "4353244353"
+    await bot.send_message(user_id, text="Привет!")
+    if user_id != None:
+        print("user_id не пустой")
+        print(user_id)
+        print(lb.playing_lobbies)
+    else:
+        print("user_id пустой")
+    lb.handle_join(user_id)
+    for i in lb.playing_lobbies:
+        print(i)
+        print(i)
+    
 
 
-@dp.message(Command("/create_lobby"))
-async def create_lobby(message: Message):
-    lb.lobbies["host_id"] = message.from_user.id
-    lb.lobbies["players"] = message.from_user.id
-    await message.answer("Cоздаёться лобби")
 
 
 
