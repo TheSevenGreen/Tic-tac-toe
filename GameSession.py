@@ -18,21 +18,9 @@ class GameSession:
         ]
         self.turn = "❌"
         
-    async def pole_keyboards(self):
-        global row
-        global col
-        global turn
-        buttons = []
-        for row in range(3): 
-            line = []
-            for col in range(3): 
-                line.append(InlineKeyboardButton(text=self.field[row][col], callback_data=f"{row}{col}{self.turn}"))
-            buttons.append(line)
-        return InlineKeyboardMarkup(inline_keyboard=buttons)
 
     def make_turn(self, row, col):
         if self.field[row][col] != " ":
-            await bot.send_message(user_id, text="Привет!")
             return False
         self.field[row][col] = self.turn
         return True

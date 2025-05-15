@@ -6,10 +6,17 @@ class Lobby:
         self.player_x = None
         self.player_y = None
         self.game_session = gm.GameSession()
+        test = self.game_session
 
 waiting_lobby = None
 
-playing_lobbies = []
+d = 1
+d2 = 2
+
+playing_lobbies = {
+    f"lobby{d}":{"player_x":24323423, "player_y": 24323443},
+    f"lobby{d2}":{"player_x":243233, "player_y": 243443}
+}
 
 def handle_join(user_id):
     global waiting_lobby
@@ -21,3 +28,6 @@ def handle_join(user_id):
         playing_lobbies.append(waiting_lobby)
         waiting_lobby = None
 
+game = Lobby()
+
+print(game.self.game_session.self.field)
