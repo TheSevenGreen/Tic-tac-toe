@@ -7,61 +7,86 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.client.bot import DefaultBotProperties
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup,CallbackQuery
-from config import TOKEN
-
-import keyboards as kb
+from game_keyboard import lobby_keyboards,pole_keyboards,keyboards_buttons
 import lobby as lb
-import GameSession as gm
+from lobby import find_lobby
+from GameSession import game
+import os
+from dotenv import load_dotenv,find_dotenv
+load_dotenv(find_dotenv())
 
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+bot = Bot(os.getenv("TOKEN"), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
+pole = [[" ", " ", " "],[" ", " ", " "],[" ", " ", " "]]
 
 @dp.message(CommandStart())
 async def start_handler(message: Message):
-    await message.answer("хуй", reply_markup=kb.keyboards)
+    await message.answer("Выберите режим: ", reply_markup=keyboards_buttons)
 
-# reply_markup=kb.pole_keyboards()
+@dp.message(Command("clear"))
+async def clear_field(message: Message):
+    game.field = pole
+    await message.answer("Поле очистилось")   
 
 @dp.message(F.text == "🕹 Играть")
 async def play(message: Message):
-    await message.answer("Игра с самим собой:", reply_markup=kb.pole_keyboards())
+    await message.answer("Игра с самим собой:", reply_markup=await pole_keyboards())
 
-@dp.callback_query()
-async def handle_callback(callback: CallbackQuery):
-    data = list(callback.data)
-    kb.row = int(data[0])
-    kb.col = int(data[1])
-    kb.turn = data[2]
-    if kb.field[kb.row][kb.col] != " ":
-        await callback.message.answer("Клетка уже занята! Попробуй другую.", reply_markup=kb.pole_keyboards())
-    else:
-        kb.field[kb.row][kb.col] = kb.turn
-    gm.game.switch_turn()
-    await callback.message.answer(f"{kb.turn} поставлен в клетку {kb.row}-{kb.col}",reply_markup=kb.pole_keyboards())
-    gm.game.check_win()
-    if gm.game.check_win() == True:
-        await callback.message.answer(f"Победил: {gm.val1}")
+# @dp.callback_query()
+# async def handle_callback(callback: CallbackQuery):
+#     data = list(callback.data)
+#     row = int(data[0])
+#     col = int(data[1])
+#     game.turn = data[2]
+#     if game.field[row][col] != " ":
+#         await callback.message.edit_text("Клетка уже занята! Попробуй другую.", reply_markup=await kb.pole_keyboards())
+#     else:
+#         game.field[row][col] = game.turn
+#     game.switch_turn()
+#     await callback.message.edit_text(f"{game.turn} поставлен в клетку {row}-{col}",reply_markup=await kb.pole_keyboards())
+#     if game.check_win() is True:
+#         await callback.message.edit_text(f"Победил: {game.winner}")
+#         game.field = pole
+#     if game.is_draw() is True:
+#         await callback.message.edit_text("Ничья!")    
+#         game.field = pole
     
+
+
 
 @dp.message(F.text == "🤼‍♂ Присоединиться к лобби")
 async def join_lobby(message: Message):
     user_id = message.from_user.id
-    abc = "4353244353"
-    await bot.send_message(user_id, text="Привет!")
-    if user_id != None:
-        print("user_id не пустой")
-        print(user_id)
-        print(lb.playing_lobbies)
-    else:
-        print("user_id пустой")
     lb.handle_join(user_id)
-    for i in lb.playing_lobbies:
-        print(i)
-        print(i)
+    if lb.waiting_lobby is not None:
+        await bot.send_message(user_id, text="Вы зашли в лобби, ожидайте противника")
+    else:
+        lobby = find_lobby(user_id)
+        await bot.send_message(lobby.player_x,text="Игра началась",reply_markup=await lobby_keyboards(user_id))
+        await bot.send_message(lobby.player_y,text="Игра началась",reply_markup=await lobby_keyboards(user_id))
+
+@dp.callback_query(F.data.startswith('game_'))
+async def handle_callback(callback: CallbackQuery):
+    global cl_user_id
+    user_id = callback.from_user.id
+    data = list(callback.data)
+    row = int(data[0])
+    col = int(data[1])
+    lobby = find_lobby(user_id)
+    lobby.game_session.turn = data[2]
+    if lobby.game_session.field[row][col] != " ":
+        await callback.message.edit_text("Клетка уже занята! Попробуй другую.", reply_markup=await lobby_keyboards(user_id))
+    else:
+        lobby.game_session.field[row][col] = lobby.game_session.turn
+    lobby.game_session.switch_turn()
+    await callback.message.edit_text(f"{lobby.game_session.turn} поставлен в клетку {row}-{col}",reply_markup=await lobby_keyboards(user_id))
+    if lobby.game_session.check_win() is True:
+        await callback.message.edit_text(f"Победил: {lobby.game_session.turn.winner}")
+        lobby.game_session.field = pole
+    if lobby.game_session.is_draw() is True:
+        await callback.message.edit_text("Ничья!")    
+        lobby.game_session.field = pole
     
-
-
-
 
 
 

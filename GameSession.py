@@ -1,14 +1,3 @@
-import asyncio
-from aiogram import Bot, Dispatcher,F,types
-from aiogram.types import Message
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart,Command
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.client.bot import DefaultBotProperties
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup,CallbackQuery
-from main import user_id
-
 class GameSession:
     def __init__(self):
         self.field = [
@@ -17,7 +6,6 @@ class GameSession:
             [" ", " ", " "]
         ]
         self.turn = "❌"
-        
 
     def make_turn(self, row, col):
         if self.field[row][col] != " ":
@@ -46,6 +34,7 @@ class GameSession:
             val2 = self.field[b[0]][b[1]]
             val3 = self.field[c[0]][c[1]]
             if val1 == val2 == val3 and val1 != " ":
+                self.winner = val1
                 return True
         return False
 
@@ -53,6 +42,7 @@ class GameSession:
         for row in self.field:
             if " " in row:
                 return False
-        return True
-    
+        return True        
+
 game = GameSession()
+

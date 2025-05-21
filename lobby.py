@@ -1,4 +1,3 @@
-import keyboards as kb
 import GameSession as gm
 
 class Lobby:
@@ -6,17 +5,11 @@ class Lobby:
         self.player_x = None
         self.player_y = None
         self.game_session = gm.GameSession()
-        test = self.game_session
 
 waiting_lobby = None
 
-d = 1
-d2 = 2
 
-playing_lobbies = {
-    f"lobby{d}":{"player_x":24323423, "player_y": 24323443},
-    f"lobby{d2}":{"player_x":243233, "player_y": 243443}
-}
+playing_lobbies = []
 
 def handle_join(user_id):
     global waiting_lobby
@@ -28,6 +21,8 @@ def handle_join(user_id):
         playing_lobbies.append(waiting_lobby)
         waiting_lobby = None
 
-game = Lobby()
+def find_lobby(user_id):
+    for lobby in playing_lobbies:
+        if user_id in [lobby.player_x,lobby.player_y]:
+            return lobby
 
-print(game.self.game_session.self.field)

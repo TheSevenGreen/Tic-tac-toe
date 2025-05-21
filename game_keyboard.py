@@ -43,7 +43,7 @@ async def lobby_keyboards(user_id):
             line.append(InlineKeyboardButton(
                 text=lobby.game_session.field[row][col], 
                 callback_data=f"game_{row}{col}{lobby.game_session.turn}"))
-            buttons.append(line)
+        buttons.append(line)
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 

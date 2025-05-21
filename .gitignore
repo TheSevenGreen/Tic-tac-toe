@@ -3,5 +3,8 @@ Test
 __pycache__
 .vscode
 venv
-config.py
 .DS_Store
+Testgame
+test2
+.env
+error
