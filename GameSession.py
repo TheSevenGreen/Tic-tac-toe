@@ -1,3 +1,5 @@
+# from main import message_x,message_y
+
 class GameSession:
     def __init__(self):
         self.field = [
@@ -6,6 +8,8 @@ class GameSession:
             [" ", " ", " "]
         ]
         self.turn = "❌"
+        self.last_turn = None
+        self.message_turn = None
 
     def make_turn(self, row, col):
         if self.field[row][col] != " ":
@@ -14,6 +18,7 @@ class GameSession:
         return True
 
     def switch_turn(self):
+        self.last_turn = self.turn
         self.turn = "⭕️" if self.turn == "❌" else "❌"
 
     def check_win(self):
@@ -43,6 +48,13 @@ class GameSession:
             if " " in row:
                 return False
         return True        
+
+    def clear(self):
+        self.field = [
+            [" ", " ", " "],
+            [" ", " ", " "],
+            [" ", " ", " "]
+        ]
 
 game = GameSession()
 
