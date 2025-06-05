@@ -31,7 +31,7 @@ async def clear_field(message: Message):
     first_name = message.from_user.first_name
     user_id = message.from_user.id 
     wins,losses = parsing_json(user_id)
-    await message.answer(f"Игрок: {first_name} \nПобед: {wins} \nПроигрышей: {losses}")   
+    await message.answer(f"Игрок: {first_name} \nПобед: {wins} \nПроигрышей: {losses}") 
 
 @dp.message(F.text == "🕹 Играть")
 async def play(message: Message):
