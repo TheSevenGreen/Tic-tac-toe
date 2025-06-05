@@ -8,7 +8,7 @@ class Lobby:
         self.player_y_message = None
         self.game_session = gm.GameSession()
         self.player_turn = self.player_x
-           
+       
 
     def switch_player_turn(self):
         self.player_turn = self.player_x if self.player_turn == self.player_y else self.player_y

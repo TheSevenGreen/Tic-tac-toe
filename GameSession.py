@@ -1,4 +1,3 @@
-# from main import message_x,message_y
 
 class GameSession:
     def __init__(self):

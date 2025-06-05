@@ -12,48 +12,31 @@ import lobby as lb
 from lobby import find_lobby
 from GameSession import game
 import os
+from data_players import join_json,win_json,losses_json,parsing_json
 from dotenv import load_dotenv,find_dotenv
 load_dotenv(find_dotenv())
 
 bot = Bot(os.getenv("TOKEN"), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
-pole = [[" ", " ", " "],[" ", " ", " "],[" ", " ", " "]]
 
 @dp.message(CommandStart())
 async def start_handler(message: Message):
+    user_id = message.from_user.id
+    join_json(user_id)
     await message.answer("Выберите режим: ", reply_markup=keyboards_buttons)
+    await message.answer("Свою статистику можно посмотреть командой /stats")
 
-@dp.message(Command("clear"))
+@dp.message(Command("stats"))
 async def clear_field(message: Message):
-    game.field = pole
-    await message.answer("Поле очистилось")   
+    first_name = message.from_user.first_name
+    user_id = message.from_user.id 
+    wins,losses = parsing_json(user_id)
+    await message.answer(f"Игрок: {first_name} \nПобед: {wins} \nПроигрышей: {losses}")   
 
 @dp.message(F.text == "🕹 Играть")
 async def play(message: Message):
     await message.answer("Игра с самим собой:", reply_markup=await pole_keyboards())
     
-
-# @dp.callback_query()
-# async def handle_callback(callback: CallbackQuery):
-#     data = list(callback.data)
-#     row = int(data[0])
-#     col = int(data[1])
-#     game.turn = data[2]
-#     if game.field[row][col] != " ":
-#         await callback.message.edit_text("Клетка уже занята! Попробуй другую.", reply_markup=await kb.pole_keyboards())
-#     else:
-#         game.field[row][col] = game.turn
-#     game.switch_turn()
-#     await callback.message.edit_text(f"{game.turn} поставлен в клетку {row}-{col}",reply_markup=await kb.pole_keyboards())
-#     if game.check_win() is True:
-#         await callback.message.edit_text(f"Победил: {game.winner}")
-#         game.field = pole
-#     if game.is_draw() is True:
-#         await callback.message.edit_text("Ничья!")    
-#         game.field = pole
-    
-
-
 
 @dp.message(F.text == "🤼‍♂ Присоединиться к лобби")
 async def join_lobby(message: Message):
@@ -62,15 +45,16 @@ async def join_lobby(message: Message):
     lb.handle_join(user_id)
     if lb.waiting_lobby is not None:
         await bot.send_message(user_id, text="Вы зашли в лобби, ожидайте противника")
+        join_json(user_id)
     else:
         lobby = find_lobby(user_id)
+        join_json(user_id)
         message_x = await bot.send_message(lobby.player_x,text="Игра началась",reply_markup=await lobby_keyboards(user_id))
         message_y = await bot.send_message(lobby.player_y,text="Игра началась",reply_markup=await lobby_keyboards(user_id))
         lobby.player_x_message = message_x.message_id
         lobby.player_y_message = message_y.message_id
         print(message_x.message_id,message_y.message_id)
     
-
 
 @dp.callback_query(F.data.startswith('game_'))
 async def handle_callback(callback: CallbackQuery):
@@ -101,6 +85,17 @@ async def handle_callback(callback: CallbackQuery):
     if lobby.game_session.check_win() is True:
         await bot.edit_message_text(chat_id = lobby.player_x,message_id = lobby.player_x_message,text=f"Победил: {lobby.game_session.winner}")
         await bot.edit_message_text(chat_id = lobby.player_y,message_id = lobby.player_y_message,text=f"Победил: {lobby.game_session.winner}")
+        if lobby.player_turn == lobby.player_x:
+            user_id = lobby.player_turn
+            win_json(user_id)
+            user_id2 = lobby.player_y
+            losses_json(user_id2)
+        
+        else:
+            user_id = lobby.player_y
+            win_json(user_id)
+            user_id2 = lobby.player_x
+            losses_json(user_id2)
         lobby.game_session.clear()
 
     if lobby.game_session.is_draw() is True:
