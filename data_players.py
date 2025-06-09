@@ -1,6 +1,6 @@
 import json
 
-def join_json(user_id):
+def join(user_id):
     user_key = str(user_id)
 
     with open("data.json", "r", encoding="utf-8") as file:
@@ -11,10 +11,11 @@ def join_json(user_id):
 
     with open("data.json", "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
+    
 
 
 
-def win_json(user_id):
+def win(user_id):
     with open("data.json", "r", encoding="utf-8") as file:
         data = json.load(file)
         data[str(user_id)]["wins"] +=1
@@ -23,7 +24,7 @@ def win_json(user_id):
         json.dump(data, file, indent=4, ensure_ascii=False)
 
 
-def losses_json(user_id2):
+def losses(user_id2):
     with open("data.json", "r", encoding="utf-8") as file:
         data = json.load(file)
         data[str(user_id2)]["losses"] +=1
@@ -31,7 +32,7 @@ def losses_json(user_id2):
     with open("data.json", "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
-def parsing_json(user_id):
+def parsing(user_id):
      with open("data.json", "r", encoding="utf-8") as file:
         data = json.load(file)
      str_user_id = str(user_id)
